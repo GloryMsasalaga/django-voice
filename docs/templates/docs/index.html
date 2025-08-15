@@ -6,8 +6,8 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
+            <div class="card border-success">
+                <div class="card-header text-white">
                     <h1 class="h3 mb-0">Django Documentation Voice Assistant</h1>
                 </div>
                 <div class="card-body">
@@ -38,7 +38,7 @@
                                 <a href="{% url 'docs:page_detail' page_id=page.id %}?lang=en" class="list-group-item list-group-item-action">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h5 class="mb-1">{{ page.title }}</h5>
-                                        <span class="badge bg-primary rounded-pill">{{ page.section_count }} sections</span>
+                                        <span class="badge rounded-pill">{{ page.section_count }} sections</span>
                                     </div>
                                     <p class="mb-1">{{ page.url }}</p>
                                 </a>

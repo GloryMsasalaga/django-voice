@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,24 +9,87 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-color: #2e7d32; /* Dark green */
+            --secondary-color: #81c784; /* Medium green */
+            --accent-color: #c8e6c9; /* Light green */
+            --text-color: #212121;
+            --bg-color: #ffffff;
+            --navbar-bg: var(--primary-color);
+            --navbar-text: #ffffff;
+            --footer-bg: #f8f9fa;
+            --footer-border: #e9ecef;
+        }
+
+        [data-bs-theme="dark"] {
+            --primary-color: #388e3c; /* Slightly lighter dark green for dark mode */
+            --secondary-color: #2e7d32; /* Dark green */
+            --accent-color: #1b5e20; /* Very dark green */
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --navbar-bg: var(--primary-color);
+            --navbar-text: #ffffff;
+            --footer-bg: #1e1e1e;
+            --footer-border: #333333;
+        }
+        
         /* Custom styles */
         body {
-            background-color: #f8f9fa;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
+        
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+        }
+        
         .navbar-brand {
             font-weight: bold;
+            color: var(--navbar-text) !important;
         }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            color: var(--navbar-text) !important;
+        }
+        
+        .btn-primary, .bg-primary {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color) !important;
+            color: white !important;
+        }
+        
         .footer {
             padding: 20px 0;
             margin-top: 40px;
-            background-color: #f8f9fa;
-            border-top: 1px solid #e9ecef;
+            background-color: var(--footer-bg);
+            border-top: 1px solid var(--footer-border);
+        }
+        
+        .theme-toggle {
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="{% url 'docs:index' %}">
                 <i class="bi bi-soundwave"></i> Django Voice Assistant
@@ -35,7 +98,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'docs:index' %}">Home</a>
                     </li>
@@ -43,6 +106,11 @@
                         <a class="nav-link" href="{% url 'docs:search' %}">Search</a>
                     </li>
                 </ul>
+                <div class="theme-toggle" id="themeToggle">
+                    <i class="bi bi-sun-fill" id="lightIcon"></i>
+                    <i class="bi bi-moon-fill d-none" id="darkIcon"></i>
+                    <span id="themeText">Dark Mode</span>
+                </div>
             </div>
         </div>
     </nav>
@@ -77,5 +145,54 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Theme Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const htmlElement = document.documentElement;
+            const themeToggle = document.getElementById('themeToggle');
+            const lightIcon = document.getElementById('lightIcon');
+            const darkIcon = document.getElementById('darkIcon');
+            const themeText = document.getElementById('themeText');
+            
+            // Check for saved theme preference or use preferred color scheme
+            const savedTheme = localStorage.getItem('theme');
+            
+            if (savedTheme) {
+                htmlElement.setAttribute('data-bs-theme', savedTheme);
+                updateThemeUI(savedTheme);
+            } else {
+                // Check if user prefers dark mode
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    htmlElement.setAttribute('data-bs-theme', 'dark');
+                    updateThemeUI('dark');
+                }
+            }
+            
+            // Toggle theme when button is clicked
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                htmlElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+            
+            // Update the UI based on current theme
+            function updateThemeUI(theme) {
+                if (theme === 'dark') {
+                    lightIcon.classList.add('d-none');
+                    darkIcon.classList.remove('d-none');
+                    themeText.textContent = 'Light Mode';
+                } else {
+                    lightIcon.classList.remove('d-none');
+                    darkIcon.classList.add('d-none');
+                    themeText.textContent = 'Dark Mode';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
