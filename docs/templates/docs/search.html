@@ -1,0 +1,77 @@
+{% extends 'docs/base.html' %}
+
+{% block title %}Search Results | Django Documentation Voice Assistant{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'docs:index' %}?lang={{ selected_language }}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Search Results</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">Search Results</h1>
+                    <!-- Language Selector -->
+                    <div>
+                        <select class="form-select form-select-sm" onchange="changeLanguage(this.value)">
+                            {% for code, name in languages.items %}
+                                <option value="{{ code }}" {% if code == selected_language %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Search Form -->
+                    <form action="{% url 'docs:search' %}" method="get" class="mb-4">
+                        <input type="hidden" name="lang" value="{{ selected_language }}">
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" value="{{ query }}" placeholder="Search Django documentation..." aria-label="Search">
+                            <button class="btn btn-outline-primary" type="submit">Search</button>
+                        </div>
+                    </form>
+
+                    <!-- Search Results -->
+                    <h2 class="h4 mb-3">Results for "{{ query }}" {% if result_count is not None %}({{ result_count }} found){% endif %}</h2>
+                    
+                    {% if results %}
+                        <div class="list-group">
+                            {% for result in results %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                                        <h3 class="h5 mb-0">{{ result.title }}</h3>
+                                        <div>
+                                            <a href="{% url 'docs:section_detail' section_id=result.id %}?lang={{ selected_language }}" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-volume-up"></i> Listen
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small">{{ result.url }}</p>
+                                    <p>{{ result.content }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No results found for "{{ query }}". Try a different search term.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeLanguage(language) {
+        // Redirect to the same page with new language
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('lang', language);
+        window.location.href = currentUrl.toString();
+    }
+</script>
+{% endblock %}
