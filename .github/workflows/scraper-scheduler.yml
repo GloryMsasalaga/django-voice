@@ -1,0 +1,32 @@
+name: Django Documentation Scraper Scheduler
+on:
+  schedule:
+    # Run every Sunday at 2:00 AM
+    - cron: '0 2 * * 0'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  scrape-and-translate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run scraper
+      run: |
+        python manage.py scrape_docs --flush-cache
+        
+    - name: Run translation
+      run: |
+        python manage.py translate_docs

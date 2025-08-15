@@ -1,0 +1,94 @@
+{% extends 'docs/base.html' %}
+
+{% block title %}{{ section.title }} | Django Documentation Voice Assistant{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'docs:index' %}?lang={{ selected_language }}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'docs:page_detail' page_id=section.id %}?lang={{ selected_language }}">{{ section.title }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Listen</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">{{ section.title }}</h1>
+                    <!-- Language Selector -->
+                    <div>
+                        <select class="form-select form-select-sm" onchange="changeLanguage(this.value)">
+                            {% for code, name in languages.items %}
+                                <option value="{{ code }}" {% if code == selected_language %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <p class="text-muted">
+                            Source: <a href="{{ section.url }}" target="_blank" rel="noopener">{{ section.url }}</a>
+                        </p>
+                    </div>
+
+                    <!-- Content and Audio Player -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Listen to this section</h2>
+                        </div>
+                        <div class="card-body">
+                            {% if audio_url %}
+                                <div class="mb-4">
+                                    <audio id="audio-player" controls class="w-100">
+                                        <source src="{{ audio_url }}" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="document.getElementById('audio-player').play()">
+                                        <i class="bi bi-play-fill"></i> Play Audio
+                                    </button>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    Audio not available for this section.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h2 class="h5 mb-0">Content</h2>
+                        </div>
+                        <div class="card-body">
+                            {{ content|linebreaks }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeLanguage(language) {
+        // Redirect to the same page with new language
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('lang', language);
+        window.location.href = currentUrl.toString();
+    }
+    
+    // Auto-play audio on page load (optional)
+    window.addEventListener('load', function() {
+        const audioPlayer = document.getElementById('audio-player');
+        if (audioPlayer) {
+            // Uncomment to auto-play
+            // audioPlayer.play();
+        }
+    });
+</script>
+{% endblock %}

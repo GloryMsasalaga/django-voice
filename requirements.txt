@@ -1,0 +1,8 @@
+# Requirements for Django Voice Assistant
+django>=5.2.0
+requests>=2.31.0
+beautifulsoup4>=4.13.0
+psycopg2-binary>=2.9.9
+gTTS>=2.5.0
+googletrans==4.0.0-rc1
+google-generativeai>=0.8.5
