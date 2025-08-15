@@ -6,3 +6,5 @@ psycopg2-binary>=2.9.9
 gTTS>=2.5.0
 googletrans==4.0.0-rc1
 google-generativeai>=0.8.5
+SpeechRecognition>=3.10.0
+pyaudio>=0.2.13  # Required for microphone support with SpeechRecognition

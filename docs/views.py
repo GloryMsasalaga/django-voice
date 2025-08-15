@@ -10,8 +10,10 @@ from django.urls import reverse
 from .models import DocumentationSection, LanguageTranslation
 from .translation import TranslationService, SUPPORTED_LANGUAGES
 from .tts import TextToSpeech
+from .voice_commands import VoiceCommandProcessor
 import os
 import json
+import re
 
 def index(request):
     """Home page view"""
@@ -91,6 +93,9 @@ def section_detail(request, section_id):
     else:
         content = section.content
     
+    # Process code blocks for better display
+    content = process_code_blocks_for_display(content)
+    
     # Get TTS service
     tts_service = TextToSpeech()
     
@@ -105,6 +110,32 @@ def section_detail(request, section_id):
         'audio_url': audio_url
     }
     return render(request, 'docs/section_detail.html', context)
+
+def process_code_blocks_for_display(content):
+    """Process code blocks to ensure they display and read correctly"""
+    # Process fenced code blocks
+    content = re.sub(
+        r'```(\w+)?\n(.*?)```',
+        r'<div class="code-block"><div class="code-language">\1</div><pre><code>\2</code></pre></div>',
+        content,
+        flags=re.DOTALL
+    )
+    
+    # Process indented code blocks (4 spaces at beginning of line)
+    indented_pattern = r'(?:(?:^|\n)[ ]{4}[^\n]+)+(?:\n|$)'
+    
+    def replace_indented(match):
+        code = match.group(0)
+        # Remove the 4 spaces at the beginning of each line
+        code = re.sub(r'(?:^|\n)[ ]{4}', '\n', code).strip()
+        return f'<div class="code-block"><pre><code>{code}</code></pre></div>'
+    
+    content = re.sub(indented_pattern, replace_indented, content, flags=re.DOTALL)
+    
+    # Process inline code
+    content = re.sub(r'`([^`]+)`', r'<code>\1</code>', content)
+    
+    return content
 
 @csrf_exempt
 def get_audio(request):
@@ -134,6 +165,37 @@ def get_audio(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+@csrf_exempt
+def process_voice_command(request):
+    """API endpoint to process voice commands"""
+    if request.method == 'POST':
+        try:
+            # Get command from request
+            data = json.loads(request.body)
+            command_text = data.get('command', '')
+            
+            if not command_text:
+                return JsonResponse({'error': 'No command provided'}, status=400)
+            
+            # Process the command
+            command_processor = VoiceCommandProcessor()
+            result = command_processor.process_command(command_text)
+            
+            return JsonResponse(result)
+                
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+def voice_interface(request):
+    """View for voice command interface"""
+    context = {
+        'languages': SUPPORTED_LANGUAGES,
+        'selected_language': 'en'
+    }
+    return render(request, 'docs/voice_interface.html', context)
 
 def search(request):
     """Search documentation sections"""

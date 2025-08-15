@@ -85,6 +85,41 @@
             align-items: center;
             gap: 8px;
         }
+        
+        /* Code block styling */
+        .code-block {
+            background-color: var(--accent-color);
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .code-language {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            font-family: monospace;
+            white-space: pre;
+        }
+        
+        code {
+            background-color: var(--accent-color);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -104,6 +139,11 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'docs:search' %}">Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'docs:voice_interface' %}">
+                            <i class="bi bi-mic-fill"></i> Voice Commands
+                        </a>
                     </li>
                 </ul>
                 <div class="theme-toggle" id="themeToggle">

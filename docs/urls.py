@@ -13,4 +13,6 @@ urlpatterns = [
     path('page/<int:page_id>/', views.page_detail, name='page_detail'),
     path('section/<int:section_id>/', views.section_detail, name='section_detail'),
     path('api/audio/', views.get_audio, name='get_audio'),
+    path('api/voice-command/', views.process_voice_command, name='process_voice_command'),
+    path('voice-interface/', views.voice_interface, name='voice_interface'),
 ]
